@@ -1,7 +1,5 @@
 package com.example;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,27 +10,59 @@ import static org.mockito.Mockito.*;
 class LionTest {
 
     @Test
-    void invalidSexThrowsException() {
-        Animal animal = mock(Animal.class);
-        assertThrows(Exception.class, () -> new Lion("Неизвестно", animal));
+    void constructorThrowsExceptionForInvalidSex() {
+        Feline feline = mock(Feline.class);
+
+        assertThrows(Exception.class,
+                () -> new Lion("Неизвестно", feline));
     }
 
     @Test
-    void getFoodUsesAnimalDependency() throws Exception {
-        Animal animal = mock(Animal.class);
-        when(animal.getFood("Хищник")).thenReturn(List.of("Животные", "Птицы"));
+    void getFoodReturnsFoodFromFeline() throws Exception {
+        Feline feline = mock(Feline.class);
+        when(feline.getFood("Хищник"))
+                .thenReturn(List.of("Животные", "Птицы"));
 
-        Lion lion = new Lion("Самец", animal);
-        List<String> food = lion.getFood();
+        Lion lion = new Lion("Самец", feline);
 
-        assertEquals(List.of("Животные", "Птицы"), food);
-        verify(animal).getFood("Хищник");
+        assertEquals(List.of("Животные", "Птицы"), lion.getFood());
     }
 
     @Test
-    void getKittensFromNonFelineDependencyReturnsZero() throws Exception {
-        Animal animal = mock(Animal.class);
-        Lion lion = new Lion("Самец", animal);
-        assertEquals(0, lion.getKittens());
+    void getFoodCallsFelineGetFoodOnce() throws Exception {
+        Feline feline = mock(Feline.class);
+        when(feline.getFood("Хищник"))
+                .thenReturn(List.of("Животные"));
+
+        Lion lion = new Lion("Самец", feline);
+        lion.getFood();
+
+        verify(feline, times(1)).getFood("Хищник");
+    }
+
+    @Test
+    void getKittensReturnsValueFromFeline() throws Exception {
+        Feline feline = mock(Feline.class);
+        when(feline.getKittens()).thenReturn(3);
+
+        Lion lion = new Lion("Самец", feline);
+
+        assertEquals(3, lion.getKittens());
+    }
+
+    @Test
+    void doesHaveManeReturnsTrueForMale() throws Exception {
+        Feline feline = mock(Feline.class);
+        Lion lion = new Lion("Самец", feline);
+
+        assertTrue(lion.doesHaveMane());
+    }
+
+    @Test
+    void doesHaveManeReturnsFalseForFemale() throws Exception {
+        Feline feline = mock(Feline.class);
+        Lion lion = new Lion("Самка", feline);
+
+        assertFalse(lion.doesHaveMane());
     }
 }

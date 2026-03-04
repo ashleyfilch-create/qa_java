@@ -39,10 +39,9 @@ nbproject/private/
 # VS Code
 .vscode/
 
-# Binary coverage data
+# JaCoCo coverage data
 jacoco.exec
-
-#jacoco-report/
+jacoco-report/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

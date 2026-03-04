@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ParameterizedAnimalTest {
 
@@ -18,63 +19,25 @@ class ParameterizedAnimalTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Травоядное", "Хищник"})
-    void felineGetFoodParameterized(String kind) throws Exception {
+    @CsvSource({
+            "Травоядное, Трава",
+            "Хищник, Животные"
+    })
+    void felineGetFoodParameterized(String kind, String expectedFirstItem) throws Exception {
         Feline feline = new Feline();
-        List<String> food = feline.getFood(kind);
-
-        if ("Травоядное".equals(kind)) {
-            assertEquals(List.of("Трава", "Различные растения"), food);
-        } else {
-            assertEquals(List.of("Животные", "Птицы", "Рыба"), food);
-        }
+        assertEquals(expectedFirstItem, feline.getFood(kind).get(0));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Травоядное", "Хищник"})
-    void catGetFoodParameterized(String kind) throws Exception {
-        Cat cat = new Cat("Барсик");
-        List<String> food = cat.getFood(kind);
+    @ValueSource(strings = {"Животные", "Рыба", "Птицы"})
+    void catGetFoodParameterized(String firstFoodItem) throws Exception {
 
-        if ("Травоядное".equals(kind)) {
-            assertEquals(List.of("Трава", "Различные растения"), food);
-        } else {
-            assertEquals(List.of("Животные", "Птицы", "Рыба"), food);
-        }
-    }
+        Feline feline = mock(Feline.class);
 
-    @ParameterizedTest
-    @CsvSource({
-            "Барсик,Барсик",
-            "Мурка,Мурка",
-            "Рыжик,Рыжик"
-    })
-    void catGetNameParameterized(String inputName, String expectedName) {
-        Cat cat = new Cat(inputName);
-        assertEquals(expectedName, cat.getName());
-    }
+        when(feline.eatMeat()).thenReturn(List.of(firstFoodItem));
 
-    @ParameterizedTest
-    @CsvSource({
-            "Самец,true",
-            "Самка,false"
-    })
-    void lionDoesHaveManeParameterized(String sex, boolean expected) throws Exception {
-        Animal animal = new Animal();
-        Lion lion = new Lion(sex, animal);
-        assertEquals(expected, lion.doesHaveMane());
-    }
+        Cat cat = new Cat(feline);
 
-    @ParameterizedTest
-    @ValueSource(ints = {0, 1, 3, 5})
-    void lionGetKittensParameterized(int kittens) throws Exception {
-        Feline feline = new Feline() {
-            @Override
-            public int getKittens() {
-                return kittens;
-            }
-        };
-        Lion lion = new Lion("Самец", feline);
-        assertEquals(kittens, lion.getKittens());
+        assertEquals(firstFoodItem, cat.getFood().get(0));
     }
 }

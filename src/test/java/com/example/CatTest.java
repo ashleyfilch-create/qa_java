@@ -1,41 +1,38 @@
 package com.example;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class CatTest {
 
     @Test
-    void catInheritsKittensFromFeline() {
-        Cat cat = new Cat("Мурка");
-        assertEquals(1, cat.getKittens());         // без аргумента
-        assertEquals(5, cat.getKittens(5));       // с аргументом
+    void getSoundReturnsMeow() {
+        Feline feline = mock(Feline.class);
+        Cat cat = new Cat(feline);
+
+        assertEquals("Мяу", cat.getSound());
     }
 
     @Test
-    void catInheritsFamilyFromFeline() {
-        Cat cat = new Cat("Мурка");
-        assertEquals("Кошачьи", cat.getFamily());
+    void getFoodDelegatesToPredator() throws Exception {
+        Feline feline = mock(Feline.class);
+        when(feline.eatMeat()).thenReturn(java.util.List.of("Мыши"));
+
+        Cat cat = new Cat(feline);
+
+        assertEquals(java.util.List.of("Мыши"), cat.getFood());
     }
 
     @Test
-    void getFoodThrowsExceptionForUnknownKindViaCat() {
-        Cat cat = new Cat("Барсик");
-        Exception exception = assertThrows(Exception.class, () -> cat.getFood("Неизвестно"));
-        assertEquals("Неизвестный вид животного, используйте значение Травоядное или Хищник", exception.getMessage());
-    }
+    void getFoodCallsEatMeatOnce() throws Exception {
+        Feline feline = mock(Feline.class);
+        when(feline.eatMeat()).thenReturn(java.util.List.of("Мыши"));
 
-    @Test
-    void getFamilyFromAnimalViaCat() {
-        Cat cat = new Cat("Барсик");
-        Animal base = new Animal();
-        assertTrue(base.getFamily().contains("кошачьи")); // базовая реализация Animal
-        assertEquals("Кошачьи", cat.getFamily());         // переопределение в Feline
+        Cat cat = new Cat(feline);
+        cat.getFood();
+
+        verify(feline, times(1)).eatMeat();
     }
 }

@@ -1,14 +1,21 @@
 package com.example;
 
-public class Cat extends Feline {
+import java.util.List;
 
-    private final String name;
+public class Cat {
 
-    public Cat(String name) {
-        this.name = name;
+    Predator predator;
+
+    public Cat(Feline feline) {
+        this.predator = feline;
     }
 
-    public String getName() {
-        return name;
+    public String getSound() {
+        return "Мяу";
     }
+
+    public List<String> getFood() throws Exception {
+        return predator.eatMeat();
+    }
+
 }

@@ -2,8 +2,6 @@ package com.example;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -20,8 +18,10 @@ class FelineTest {
 
     @Test
     void eatMeatReturnsPredatorFood() throws Exception {
-        List<String> food = feline.eatMeat();
-        assertEquals(List.of("Животные", "Птицы", "Рыба"), food);
+        assertEquals(
+                List.of("Животные", "Птицы", "Рыба"),
+                feline.eatMeat()
+        );
     }
 
     @Test
@@ -36,13 +36,23 @@ class FelineTest {
 
     @Test
     void getFoodThrowsExceptionForUnknownKind() {
-        Exception exception = assertThrows(Exception.class, () -> feline.getFood("Неизвестно"));
-        assertEquals("Неизвестный вид животного, используйте значение Травоядное или Хищник", exception.getMessage());
+        assertThrows(Exception.class,
+                () -> feline.getFood("Неизвестно"));
     }
 
     @Test
-    void getFamilyFromAnimalViaFeline() {
-        assertTrue(feline.getFamily() instanceof String);
+    void getFoodThrowsCorrectMessageForUnknownKind() {
+        Exception exception = assertThrows(Exception.class,
+                () -> feline.getFood("Неизвестно"));
+
+        assertEquals(
+                "Неизвестный вид животного, используйте значение Травоядное или Хищник",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void animalFamilyContainsCats() {
         Animal base = new Animal();
         assertTrue(base.getFamily().contains("кошачьи"));
     }
